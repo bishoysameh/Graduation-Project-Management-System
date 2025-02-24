@@ -56,7 +56,10 @@ public class AuthService {
      .password(passwordEncoder.encode(request.getPassword()))
      .role(Role.STUDENT)
      .department(request.getDepartment())
-     .year(request.getYear())
+     .creditHours(request.getCreditHours())
+     .studentId(request.getStudentId())
+     .gpa(request.getGpa())
+     .level(request.getLevel())
      .status(Status.PENDING)
      .build();
          repository.save(user);

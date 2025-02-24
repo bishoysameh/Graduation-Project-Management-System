@@ -10,7 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.graduationProject.gpManagementSystem.model.Doctor;
+import com.graduationProject.gpManagementSystem.model.Project;
+import com.graduationProject.gpManagementSystem.model.Team;
 import com.graduationProject.gpManagementSystem.service.DoctorService;
+import com.graduationProject.gpManagementSystem.service.ProjectService;
+import com.graduationProject.gpManagementSystem.service.TeamService;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -19,26 +24,26 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 
 @RestController
-@RequestMapping("/api/v1/doctors")
-public class DoctorController {
-    
+@RequestMapping("/api/v1/projects")
+public class ProjectController
+ {
 
-    private final DoctorService doctorService;
+    private final ProjectService projectService;
 
-    public DoctorController(DoctorService doctorService) {
-        this.doctorService = doctorService;
+    public ProjectController(ProjectService projectService) {
+        this.projectService = projectService;
     }
 
     // API to fetch all doctors
     //work
     @GetMapping
-    public List<Doctor> getAllDoctors() {
-        return doctorService.getAllDoctors();
+    public List<Project> getAllProjects() {
+        return projectService.getAllProjects();
     }
 //work
     @GetMapping("/{id}")
-    public Optional<Doctor> getDoctorById(@PathVariable Long id) {
-        return doctorService.getDoctorById(id);
+    public Optional<Project> getProjectById(@PathVariable Long id) {
+        return projectService.getProjectById(id);
     }
 
     // @PostMapping
@@ -46,22 +51,20 @@ public class DoctorController {
     //     return ResponseEntity.ok(doctorService.addDoctor(doctor));
     // }
 
-    //delete it because it is the same register doctor 
     @PostMapping
-    public void addDoctor(@RequestBody Doctor doctor) {
-         doctorService.addDoctor(doctor);
+    public void addProject(@RequestBody Project project) {
+         projectService.addProject(project);
     }
 
-    //contain error
     @PutMapping("/{id}")
-    public Doctor updateDoctor(@PathVariable Long id, @RequestBody Doctor doctor) {        
-        return doctorService.updateDoctor(id,doctor);
+    public Project updateProject(@PathVariable Long id, @RequestBody Project project) {        
+        return projectService.updateProject(id,project);
     }
 
     //work
     @DeleteMapping("/{id}")
-    public void deleteDoctor(@PathVariable Long id ){
-         doctorService.deleteDoctor(id);
+    public void deleteProject(@PathVariable Long id ){
+         projectService.deleteProject(id);
     }
     
 

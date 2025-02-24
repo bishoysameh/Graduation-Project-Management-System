@@ -13,7 +13,10 @@ public class CreateStudentDTO {
     private String email;
     private String password;
     private String department;
-    private int year;
+    private int level ;
+    private String studentId;
+    private double gpa;
+    private int creditHours;
 
     @Enumerated(EnumType.STRING)
      private Role role ;

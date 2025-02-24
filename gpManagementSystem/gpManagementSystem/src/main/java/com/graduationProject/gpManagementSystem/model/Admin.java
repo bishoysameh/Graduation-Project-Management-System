@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Table(name = "admins")
 public class Admin extends User {
-    private Long id;
+    // private Long id;
 
     @Builder(builderMethodName = "doctorBuilder")
     public Admin(Long id, String username, String email, String password, Role role, Status status, Long id2) {
@@ -21,16 +21,16 @@ public class Admin extends User {
         id = id2;
     }
 
-    public Admin(Long id) {
-        this.id = id;
-    }
+    // public Admin(Long id) {
+    //     this.id = id;
+    // }
 
-    public Long getId() {
-        return id;
-    }
+    // public Long getId() {
+    //     return id;
+    // }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    // public void setId(Long id) {
+    //     this.id = id;
+    // }
     
 }
