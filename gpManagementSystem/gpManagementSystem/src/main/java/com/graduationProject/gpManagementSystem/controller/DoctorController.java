@@ -41,11 +41,6 @@ public class DoctorController {
         return doctorService.getDoctorById(id);
     }
 
-    // @PostMapping
-    // public ResponseEntity<?> addDoctor(@RequestBody Doctor doctor) {
-    //     return ResponseEntity.ok(doctorService.addDoctor(doctor));
-    // }
-
     //delete it because it is the same register doctor 
     @PostMapping
     public void addDoctor(@RequestBody Doctor doctor) {

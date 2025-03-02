@@ -24,8 +24,6 @@ public class Proposal {
 
     private String title;
     private String description;
-    private LocalDate startDate;
-    private LocalDate endDate;
     private boolean approved = false;
 
     @ManyToOne
@@ -46,22 +44,36 @@ public class Proposal {
     private List<Doctor> doctors; // Send proposal to multiple doctors
 
     private String pdfPath; // Store file path
+    private String filename;
 
     public Proposal(){}
+    
 
-    public Proposal(Long id, String title, String description, LocalDate startDate, LocalDate endDate, boolean approved,
-            Team team, Student submittedBy, List<Doctor> doctors, String pdfPath) {
+    // public Proposal(Long id, String title, String description,  boolean approved,
+    //         Team team, Student submittedBy, List<Doctor> doctors, String pdfPath) {
+    //     this.id = id;
+    //     this.title = title;
+    //     this.description = description;
+    //     this.approved = approved;
+    //     this.team = team;
+    //     this.submittedBy = submittedBy;
+    //     this.doctors = doctors;
+    //     this.pdfPath = pdfPath;
+    // }
+
+    public Proposal(Long id, String title, String description, boolean approved, Team team, Student submittedBy,
+            List<Doctor> doctors, String pdfPath, String filename) {
         this.id = id;
         this.title = title;
         this.description = description;
-        this.startDate = startDate;
-        this.endDate = endDate;
         this.approved = approved;
         this.team = team;
         this.submittedBy = submittedBy;
         this.doctors = doctors;
         this.pdfPath = pdfPath;
+        this.filename = filename;
     }
+
 
     public Long getId() {
         return id;
@@ -85,22 +97,6 @@ public class Proposal {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
-
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
     }
 
     public boolean isApproved() {
@@ -141,6 +137,16 @@ public class Proposal {
 
     public void setPdfPath(String pdfPath) {
         this.pdfPath = pdfPath;
+    }
+
+
+    public String getFilename() {
+        return filename;
+    }
+
+
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 
     // Getters and Setters

@@ -1,10 +1,20 @@
 package com.graduationProject.gpManagementSystem.service;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.graduationProject.gpManagementSystem.dto.ApiResponse;
 import com.graduationProject.gpManagementSystem.dto.ProposalRequest;
 import com.graduationProject.gpManagementSystem.enums.ProjectStatus;
 import com.graduationProject.gpManagementSystem.model.Doctor;
@@ -19,6 +29,17 @@ import com.graduationProject.gpManagementSystem.repository.StudentRepository;
 import com.graduationProject.gpManagementSystem.repository.TeamRepository;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.http.MediaType;
+
+import com.graduationProject.gpManagementSystem.service.ProposalService;
+
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+
+import java.nio.file.Path;
+
+
+
 
 @Service
 public class ProposalService {
@@ -39,13 +60,19 @@ public class ProposalService {
     private StudentRepository studentRepository;
 
 
+
+    
+    private static final String UPLOAD_DIR = "uploads/proposals";
+
+
+
     //submit proposal
-public Proposal submitProposal(ProposalRequest request) {
-        // 🔹 Find the student submitting the proposal
+     public ResponseEntity<ApiResponse<Proposal>> submitProposal(ProposalRequest request , MultipartFile file) {
+        // Find the student submitting the proposal
         Student student = studentRepository.findById(request.getId())
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
-        // 🔹 Ensure the student is part of a team
+        // Ensure the student is part of a team
         if (student.getTeam() == null) {
             throw new RuntimeException("Student must be in a team to submit a proposal");
         }
@@ -59,19 +86,55 @@ public Proposal submitProposal(ProposalRequest request) {
             throw new RuntimeException("No valid doctors found for the proposal");
         }
 
-        // 🔹 Create a new proposal
+
+
+        validateFile(file);
+        String filePath = saveFile(file);
+
+
+        // Create a new proposal
         Proposal proposal = new Proposal();
         proposal.setTitle(request.getTitle());
-        proposal.setDescription(request.getDescription());
-        proposal.setStartDate(request.getStartDate());
-        proposal.setEndDate(request.getEndDate());
+        proposal.setDescription(request.getDescription());     
         proposal.setApproved(false);  // Default: Not yet approved
         proposal.setTeam(team);
         proposal.setSubmittedBy(student);
         proposal.setDoctors(doctors);
+        proposal.setPdfPath(filePath);
+        proposal.setFilename(file.getOriginalFilename());
         
-        // 🔹 Save the proposal
-        return proposalRepository.save(proposal);
+        // Save the proposal
+        proposalRepository.save(proposal);
+
+         ApiResponse<Proposal> response = new ApiResponse<>(
+            "success" ,
+            "Proposal sended successfully"
+         );
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+
+
+
+
+    public ResponseEntity<Resource> getPdf(String filename) throws IOException {
+        Path filePath = Paths.get(UPLOAD_DIR).resolve(filename).toAbsolutePath();
+
+        if (!Files.exists(filePath)) {
+            throw new RuntimeException("File not found: " + filePath);
+        }
+
+        Resource resource = new UrlResource(filePath.toUri());
+
+        if (resource.exists() || resource.isReadable()) {
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
+                    .body(resource);
+        } else {
+            throw new RuntimeException("File not readable");
+        }
     }
 
 
@@ -79,11 +142,54 @@ public Proposal submitProposal(ProposalRequest request) {
 
 
 
+    private void validateFile(MultipartFile file) {
+        String contentType = file.getContentType();
+        long maxSize = 5 * 1024 * 1024; // 5MB
 
-    // ✅ Approve Proposal → Moves Proposal to Projects
-    public void approveProposal(Long proposalId, Long doctorId) {
-        Proposal proposal = getProposalById(proposalId);
+        if (file.isEmpty()) {
+            throw new RuntimeException("File is empty");
+        }
+
+        if (file.getSize() > maxSize) {
+            throw new RuntimeException("File exceeds the max allowed size");
+        }
+
+        if (!Objects.equals(contentType, "application/pdf")) {
+            throw new RuntimeException("Only PDF files are allowed");
+        }
+    }
+
+
+
+
+
+     private String saveFile(MultipartFile file) {
+        // String uploadDir = "uploads/proposals";
+          final String uploadDir = System.getProperty("user.dir") + "/uploads/proposals/";
+
+        String filename = file.getOriginalFilename();
+        String filePath = uploadDir + filename;
+
+        try {
+            File directory = new File(uploadDir);
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+
+            file.transferTo(new File(filePath));
+            return filePath;
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save file", e);
+        }
+    }
+
+
+
+    // Approve Proposal → Moves Proposal to Projects
+    public void approveProposal(Long doctorId, Long proposalId) {
+
         Doctor doctor = getDoctorById(doctorId);
+        Proposal proposal = getProposalById(proposalId);
 
         assignDoctorToTeam(proposal.getTeam(), doctor);
         moveProposalToProject(proposal);
@@ -92,10 +198,11 @@ public Proposal submitProposal(ProposalRequest request) {
 
 
 
-    // ✅ Reject Proposal → Removes it from the Doctor's Pending List
-    public void rejectProposal(Long proposalId, Long doctorId) {
-        Proposal proposal = getProposalById(proposalId);
+    // Reject Proposal → Removes it from the Doctor's Pending List
+    public void rejectProposal(Long doctorId, Long proposalId) {
+
         Doctor doctor = getDoctorById(doctorId);
+        Proposal proposal = getProposalById(proposalId);
         
         // Remove doctor from the proposal's doctor list
         proposal.getDoctors().remove(doctor);
@@ -110,7 +217,7 @@ public Proposal submitProposal(ProposalRequest request) {
 
 
 
-    // ✅ Get Pending Proposals for a Doctor
+    // Get Pending Proposals for a Doctor
     public List<Proposal> getPendingProposals(Long doctorId) {
         Doctor doctor = getDoctorById(doctorId);
         return proposalRepository.findByDoctorsContaining(doctor);
@@ -122,31 +229,29 @@ public Proposal submitProposal(ProposalRequest request) {
 
     // utility functions 
 
-    // ✅ Assign Doctor to Team
+    //  Assign Doctor to Team
     private void assignDoctorToTeam(Team team, Doctor doctor) {
         team.setDoctor(doctor);
         teamRepository.save(team);
     }
 
 
-    // ✅ Move Proposal to Project Table
+    // Move Proposal to Project Table
     private void moveProposalToProject(Proposal proposal) {
         Project project = new Project();
         project.setTitle(proposal.getTitle());
         project.setDescription(proposal.getDescription());
-        project.setStartDate(proposal.getStartDate());
-        project.setEndDate(proposal.getEndDate());
         project.setTeam(proposal.getTeam());
         project.setProjectStatus(ProjectStatus.TODO);
         projectRepository.save(project);
     }
 
-    // ✅ Remove Proposal from Pending List
+    //  Remove Proposal from Pending List
     private void removePendingProposal(Proposal proposal) {
         proposalRepository.delete(proposal);
     }
 
-    // ✅ Get Proposal by ID
+    //  Get Proposal by ID
     // private Proposal getProposalById(Long proposalId) {
     //     return proposalRepository.findById(proposalId)
     //             .orElseThrow(() -> new RuntimeException("Proposal not found"));
@@ -158,7 +263,7 @@ public Proposal submitProposal(ProposalRequest request) {
             .orElseThrow(() -> new EntityNotFoundException("Proposal with ID " + proposalId + " not found"));
 }
 
-    // ✅ Get Doctor by ID
+    //   Get Doctor by ID
     private Doctor getDoctorById(Long doctorId) {
         return doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
