@@ -1,6 +1,5 @@
 package com.graduationProject.gpManagementSystem.model;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

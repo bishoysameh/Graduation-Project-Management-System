@@ -1,10 +1,8 @@
 package com.graduationProject.gpManagementSystem.controller;
 
-import java.net.http.HttpRequest;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,11 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.graduationProject.gpManagementSystem.dto.TeamRequest;
-import com.graduationProject.gpManagementSystem.exception.CustomException;
-import com.graduationProject.gpManagementSystem.model.Doctor;
-import com.graduationProject.gpManagementSystem.model.Student;
 import com.graduationProject.gpManagementSystem.model.Team;
-import com.graduationProject.gpManagementSystem.service.DoctorService;
 import com.graduationProject.gpManagementSystem.service.StudentService;
 import com.graduationProject.gpManagementSystem.service.TeamService;
 

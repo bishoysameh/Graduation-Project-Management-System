@@ -46,12 +46,19 @@ public class Project {
     @JoinColumn(name = "team_id", referencedColumnName = "id")
     private Team team;
 
+
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+    private List<Sprint> sprints;
+
+
     public Project(){}
 
 
     public Project(Long id, String title, String description,
             com.graduationProject.gpManagementSystem.enums.ProjectStatus projectStatus, LocalDate startDate,
-            LocalDate endDate, List<Task> tasks, Team team) {
+            LocalDate endDate, List<Task> tasks, Team team , List<Sprint> sprints) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -60,6 +67,7 @@ public class Project {
         this.endDate = endDate;
         this.tasks = tasks;
         this.team = team;
+        this.sprints = sprints;
     }
 
 
@@ -140,6 +148,16 @@ public class Project {
 
     public void setTeam(Team team) {
         this.team = team;
+    }
+
+
+    public List<Sprint> getSprints() {
+        return sprints;
+    }
+
+
+    public void setSprints(List<Sprint> sprints) {
+        this.sprints = sprints;
     }
     
 

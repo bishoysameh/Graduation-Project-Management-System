@@ -2,6 +2,7 @@ package com.graduationProject.gpManagementSystem.dto;
 import java.util.List;
 
 public class ProposalRequest {
+    //student id , change it to send in end point if you need it  
     private Long id;
     private String title;
     private String description;

@@ -6,9 +6,7 @@ import java.util.Optional;
 // import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.graduationProject.gpManagementSystem.model.Doctor;
 import com.graduationProject.gpManagementSystem.model.Project;
-import com.graduationProject.gpManagementSystem.repository.DoctorRepository;
 import com.graduationProject.gpManagementSystem.repository.ProjectRepository;
 
 @Service

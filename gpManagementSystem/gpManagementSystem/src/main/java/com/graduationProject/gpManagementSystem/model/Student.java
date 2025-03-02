@@ -31,6 +31,7 @@ public class Student extends User{
     private String studentId;
     private double gpa;
     private int creditHours;
+    private boolean isTeamLeader ;
 
 //Define the many-to-one relationship with Team
     @ManyToOne
@@ -39,42 +40,45 @@ public class Student extends User{
 
     @JsonIgnore
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
-    private List<StudentTask> studentTasks;
+    private List<Task> tasks;
 
-    public Student(int level, String department, String studentId, double gpa, int creditHours) {
+    public Student(int level, String department, String studentId, double gpa, int creditHours , boolean isTeamLeader) {
         this.level = level;
         this.department = department;
         this.studentId = studentId;
         this.gpa = gpa;
         this.creditHours = creditHours;
+        this.isTeamLeader = isTeamLeader;
     }
 
     @Builder(builderMethodName = "studentBuilder")
     public Student(Long id, String username, String email, String password, Role role, Status status, int level,
-            String department, String studentId, double gpa, int creditHours) {
+            String department, String studentId, double gpa, int creditHours,boolean isTeamLeader) {
         super(id, username, email, password, role, status);
         this.level = level;
         this.department = department;
         this.studentId = studentId;
         this.gpa = gpa;
         this.creditHours = creditHours;
+        this.isTeamLeader = isTeamLeader;
     }
     
 
-    public Student(int level, String department, String studentId, double gpa, int creditHours, Team team,
-            List<StudentTask> studentTasks) {
+    public Student(int level, String department, String studentId, double gpa, int creditHours,boolean isTeamLeader, Team team,
+            List<Task> tasks) {
         this.level = level;
         this.department = department;
         this.studentId = studentId;
         this.gpa = gpa;
         this.creditHours = creditHours;
+        this.isTeamLeader = isTeamLeader;
         this.team = team;
-        this.studentTasks = studentTasks;
+        this.tasks = tasks;
     }
 
     public Student(Long id, String username, String email, String password, Role role, Status status, int level,
             String department, String studentId, double gpa, int creditHours, Team team,
-            List<StudentTask> studentTasks) {
+            List<Task> tasks) {
         super(id, username, email, password, role, status);
         this.level = level;
         this.department = department;
@@ -82,7 +86,7 @@ public class Student extends User{
         this.gpa = gpa;
         this.creditHours = creditHours;
         this.team = team;
-        this.studentTasks = studentTasks;
+        this.tasks = tasks;
     }
 
     public int getLevel() {
@@ -128,6 +132,22 @@ public class Student extends User{
 
     
 
+    public boolean isTeamLeader() {
+        return isTeamLeader;
+    }
+
+    public void setTeamLeader(boolean isTeamLeader) {
+        this.isTeamLeader = isTeamLeader;
+    }
+
+    public List<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
+    }
+
     public Team getTeam() {
         return team;
     }
@@ -136,13 +156,13 @@ public class Student extends User{
         this.team = team;
     }
 
-    public List<StudentTask> getStudentTasks() {
-        return studentTasks;
-    }
+    // public List<Task> getStudentTasks() {
+    //     return tasks;
+    // }
 
-    public void setStudentTasks(List<StudentTask> studentTasks) {
-        this.studentTasks = studentTasks;
-    }
+    // public void setStudentTasks(List<Task> tasks) {
+    //     this.tasks = tasks;
+    // }
 
     @Override
     public String toString() {

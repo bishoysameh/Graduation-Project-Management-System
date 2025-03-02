@@ -61,6 +61,7 @@ public class AuthService {
      .gpa(request.getGpa())
      .level(request.getLevel())
      .status(Status.PENDING)
+     .isTeamLeader(false)
      .build();
          repository.save(user);
            return LoginResponseDTO.builder().message("Registration pending approval").build();

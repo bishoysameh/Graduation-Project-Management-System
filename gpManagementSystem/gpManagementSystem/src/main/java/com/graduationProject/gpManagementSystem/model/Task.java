@@ -1,20 +1,18 @@
 package com.graduationProject.gpManagementSystem.model;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.graduationProject.gpManagementSystem.enums.TaskStatus;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 
@@ -28,7 +26,8 @@ public class Task {
     private Long id;
     private String title;
     private String description;
-    // private TaskStatus taskStatus;
+    @Enumerated(EnumType.STRING)
+    private TaskStatus taskStatus;
     private LocalDate startDate;
     private LocalDate endDate;
 
@@ -37,24 +36,43 @@ public class Task {
     private Project project;
 
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
-    private List<StudentTask> studentTasks;
+    @ManyToOne
+    @JoinColumn(name = "student_id" , referencedColumnName = "id")
+    private Student student;
 
+
+    @ManyToOne
+    @JoinColumn(name = "sprint_id" , referencedColumnName = "id")
+    private Sprint sprint;
 
     //if any problem occure remove this empty constructor
     public Task(){}
 
 
+    public Task(Long id, String title, String description, TaskStatus taskStatus, LocalDate startDate,
+            LocalDate endDate, Project project, Student student, Sprint sprint) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.taskStatus = taskStatus;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.project = project;
+        this.student = student;
+        this.sprint = sprint;
+    }
+
+
     public Task(Long id, String title, String description, LocalDate startDate, LocalDate endDate, Project project,
-            List<StudentTask> studentTasks) {
+            Student student, Sprint sprint) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
         this.project = project;
-        this.studentTasks = studentTasks;
+        this.student = student;
+        this.sprint = sprint;
     }
 
 
@@ -108,15 +126,17 @@ public class Task {
     }
 
 
-
-    public List<StudentTask> getStudentTasks() {
-        return studentTasks;
-    }
+//if any problem happend return those
 
 
-    public void setStudentTasks(List<StudentTask> studentTasks) {
-        this.studentTasks = studentTasks;
-    }
+    // public Student getStudentTasks() {
+    //     return student;
+    // }
+
+
+    // public void setStudentTasks(Student student) {
+    //     this.student = student;
+    // }
 
 
     public Project getProject() {
@@ -126,6 +146,36 @@ public class Task {
 
     public void setProject(Project project) {
         this.project = project;
+    }
+
+
+    public Student getStudent() {
+        return student;
+    }
+
+
+    public void setStudent(Student student) {
+        this.student = student;
+    }
+
+
+    public Sprint getSprint() {
+        return sprint;
+    }
+
+
+    public void setSprint(Sprint sprint) {
+        this.sprint = sprint;
+    }
+
+
+    public TaskStatus getTaskStatus() {
+        return taskStatus;
+    }
+
+
+    public void setTaskStatus(TaskStatus taskStatus) {
+        this.taskStatus = taskStatus;
     }
 
 

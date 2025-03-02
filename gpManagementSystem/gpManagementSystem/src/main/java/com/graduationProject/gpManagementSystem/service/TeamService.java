@@ -90,11 +90,16 @@ private final StudentService studentService;
 
 
 
+
+           //the first student in the team when created become the team leader 
+           students.get(0).setTeamLeader(true);
+        
         // Create and save the team
         Team newTeam = new Team();
         newTeam.setName(request.getName());
         newTeam.setStudents(students);
 
+     
         teamRepository.save(newTeam);
 
 
