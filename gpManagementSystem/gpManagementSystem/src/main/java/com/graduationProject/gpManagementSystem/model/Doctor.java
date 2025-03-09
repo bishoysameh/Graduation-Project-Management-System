@@ -48,8 +48,8 @@ public class Doctor extends User{
 
     @Builder(builderMethodName = "doctorBuilder")
     public Doctor(Long id, String username, String email, String password, Role role, Status status,
-            String specialization, List<Team> teams, List<Proposal> proposals) {
-        super(id, username, email, password, role, status);
+            String specialization, List<Team> teams, List<Proposal> proposals , List<ChatRoom> chatRooms ,List<Message> messages) {
+        super(id, username, email, password, role, status, chatRooms , messages );
         this.specialization = specialization;
         this.teams = teams;
         this.proposals = proposals;
@@ -57,8 +57,8 @@ public class Doctor extends User{
 
 
     public Doctor(Long id, String username, String email, String password, Role role, Status status,
-            String specialization, List<Team> teams) {
-        super(id, username, email, password, role, status);
+            String specialization, List<Team> teams , List<ChatRoom> chatRooms , List<Message> messages) {
+        super(id, username, email, password, role, status , chatRooms , messages);
         this.specialization = specialization;
         this.teams = teams;
     }
@@ -78,8 +78,8 @@ public class Doctor extends User{
 
 
     public Doctor(Long id, String username, String email, String password, Role role, Status status, Long id2,
-    String specialization) {
-super(id, username, email, password, role, status);
+    String specialization , List<ChatRoom> chatRooms , List<Message> messages) {
+super(id, username, email, password, role, status , chatRooms , messages);
 id = id2;
 this.specialization = specialization;
 }

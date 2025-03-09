@@ -11,7 +11,9 @@ import org.springframework.security.authentication.AuthenticationProvider;
 // import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 // import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+// import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -19,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 // import static org.springframework.http.HttpMethod.GET;
 // import static org.springframework.http.HttpMethod.POST;
 // import static org.springframework.http.HttpMethod.PUT;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 // import java.net.http.HttpRequest;
 
@@ -41,12 +44,18 @@ public class SecurityConfiguration  {
                   .authorizeHttpRequests( authorizeRequest ->
                           authorizeRequest
                                   .requestMatchers("api/v1/auth/**").permitAll()
+                                  .requestMatchers("/ws/**" , "/").permitAll() // Allow WebSocket endpoints
+                                  .requestMatchers("/topic/**", "/app/**").permitAll() // Allow STOMP endpoints
 
                                   .anyRequest()
                                   .authenticated()
 
                                  )
-
+                                 .csrf(csrf -> csrf.disable()) // Disable CSRF for WebSocket
+                                 .headers(headers -> headers
+                                 .frameOptions(frameOptions -> frameOptions.disable()) // Disable X-Frame-Options
+                                 .cacheControl(cache -> cache.disable()) // Avoid caching security headers
+                             )
 
                  .sessionManagement((session) -> session
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -60,5 +69,22 @@ public class SecurityConfiguration  {
 
 
 return http.build();
+
+
+
 }
+
+@Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring()
+            .requestMatchers(
+                new AntPathRequestMatcher("/"),
+                new AntPathRequestMatcher("/index.html"),
+                new AntPathRequestMatcher("/js/main.js"),
+                new AntPathRequestMatcher("/css/main.css"),
+                new AntPathRequestMatcher("/ws/**")
+            );
+    }
+
+
 }

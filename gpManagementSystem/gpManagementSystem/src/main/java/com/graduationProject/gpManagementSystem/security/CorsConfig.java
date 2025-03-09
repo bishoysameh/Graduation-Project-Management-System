@@ -16,9 +16,16 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(@SuppressWarnings("null") CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("*")
+                .allowedOrigins("http://localhost:3000") // Allow frontend origin
+
+                        // .allowedOrigins("*")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowedHeaders("*"); // Enable CORS for the whole application.
+                        .allowedHeaders("*") // Enable CORS for the whole application.
+                        .allowCredentials(true)// ✅ Required for WebSockets
+
+
+                        .exposedHeaders("Authorization") // Expose required headers
+                        .allowedOriginPatterns("*");  // Try this if allowedOrigins isn't enough
             }
         };
     }

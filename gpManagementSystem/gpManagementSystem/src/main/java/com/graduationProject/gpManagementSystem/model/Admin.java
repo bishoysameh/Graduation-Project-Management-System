@@ -1,5 +1,7 @@
 package com.graduationProject.gpManagementSystem.model;
 
+import java.util.List;
+
 import com.graduationProject.gpManagementSystem.enums.Role;
 import com.graduationProject.gpManagementSystem.enums.Status;
 
@@ -16,8 +18,8 @@ public class Admin extends User {
     // private Long id;
 
     @Builder(builderMethodName = "doctorBuilder")
-    public Admin(Long id, String username, String email, String password, Role role, Status status, Long id2) {
-        super(id, username, email, password, role, status);
+    public Admin(Long id, String username, String email, String password, Role role, Status status, Long id2 ,List<ChatRoom> chatRooms , List<Message> messages) {
+        super(id, username, email, password, role, status , chatRooms , messages);
         id = id2;
     }
 

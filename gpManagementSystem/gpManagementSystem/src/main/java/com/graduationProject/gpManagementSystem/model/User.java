@@ -11,6 +11,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.graduationProject.gpManagementSystem.enums.Role;
 import com.graduationProject.gpManagementSystem.enums.Status;
@@ -50,6 +51,16 @@ public class User implements UserDetails{
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
  
+
+
+    @ManyToMany(mappedBy = "users" , cascade = CascadeType.ALL)
+    private List<ChatRoom> chatRooms;
+
+
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
+    private List<Message> messages;
+
+
 
 
     // public User () {

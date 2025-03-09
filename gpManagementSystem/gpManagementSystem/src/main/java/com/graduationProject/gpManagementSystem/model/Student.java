@@ -53,8 +53,8 @@ public class Student extends User{
 
     @Builder(builderMethodName = "studentBuilder")
     public Student(Long id, String username, String email, String password, Role role, Status status, int level,
-            String department, String studentId, double gpa, int creditHours,boolean isTeamLeader) {
-        super(id, username, email, password, role, status);
+            String department, String studentId, double gpa, int creditHours,boolean isTeamLeader , List<ChatRoom> chatRooms , List<Message> messages) {
+        super(id, username, email, password, role, status, chatRooms , messages);
         this.level = level;
         this.department = department;
         this.studentId = studentId;
@@ -78,8 +78,8 @@ public class Student extends User{
 
     public Student(Long id, String username, String email, String password, Role role, Status status, int level,
             String department, String studentId, double gpa, int creditHours, Team team,
-            List<Task> tasks) {
-        super(id, username, email, password, role, status);
+            List<Task> tasks , List<ChatRoom> chatRooms , List<Message> messages) {
+        super(id, username, email, password, role, status, chatRooms , messages);
         this.level = level;
         this.department = department;
         this.studentId = studentId;
