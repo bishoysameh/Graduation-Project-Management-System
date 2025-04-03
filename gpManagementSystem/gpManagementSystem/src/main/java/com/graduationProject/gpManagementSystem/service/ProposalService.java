@@ -9,14 +9,14 @@ import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.graduationProject.gpManagementSystem.dto.ApiResponse;
 import com.graduationProject.gpManagementSystem.dto.ProposalRequest;
 import com.graduationProject.gpManagementSystem.enums.ProjectStatus;
+import com.graduationProject.gpManagementSystem.exception.InvalidActionException;
+import com.graduationProject.gpManagementSystem.exception.ResourceNotFoundException;
 import com.graduationProject.gpManagementSystem.model.Doctor;
 import com.graduationProject.gpManagementSystem.model.Project;
 import com.graduationProject.gpManagementSystem.model.Proposal;
@@ -28,7 +28,6 @@ import com.graduationProject.gpManagementSystem.repository.ProposalRepository;
 import com.graduationProject.gpManagementSystem.repository.StudentRepository;
 import com.graduationProject.gpManagementSystem.repository.TeamRepository;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.MediaType;
 
 import com.graduationProject.gpManagementSystem.service.ProposalService;
@@ -67,14 +66,14 @@ public class ProposalService {
 
 
     //submit proposal
-     public ResponseEntity<ApiResponse<Proposal>> submitProposal(ProposalRequest request , MultipartFile file) {
+     public void submitProposal(ProposalRequest request , MultipartFile file) {
         // Find the student submitting the proposal
         Student student = studentRepository.findById(request.getId())
-                .orElseThrow(() -> new RuntimeException("Student not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found"));
 
         // Ensure the student is part of a team
         if (student.getTeam() == null) {
-            throw new RuntimeException("Student must be in a team to submit a proposal");
+            throw new InvalidActionException("Student must be in a team to submit a proposal");
         }
 
         // 🔹 Get the team from the student
@@ -83,7 +82,7 @@ public class ProposalService {
         // 🔹 Fetch doctors based on provided doctor IDs
         List<Doctor> doctors = doctorRepository.findAllById(request.getDoctorIds());
         if (doctors.isEmpty()) {
-            throw new RuntimeException("No valid doctors found for the proposal");
+            throw new ResourceNotFoundException("No valid doctors found for the proposal");
         }
 
 
@@ -106,13 +105,13 @@ public class ProposalService {
         // Save the proposal
         proposalRepository.save(proposal);
 
-         ApiResponse<Proposal> response = new ApiResponse<>(
-            "success" ,
-            "Proposal sended successfully"
-         );
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+
+
+
+
+
 
 
 
@@ -122,7 +121,7 @@ public class ProposalService {
         Path filePath = Paths.get(UPLOAD_DIR).resolve(filename).toAbsolutePath();
 
         if (!Files.exists(filePath)) {
-            throw new RuntimeException("File not found: " + filePath);
+            throw new ResourceNotFoundException("File not found: " + filePath);
         }
 
         Resource resource = new UrlResource(filePath.toUri());
@@ -194,7 +193,11 @@ public class ProposalService {
         assignDoctorToTeam(proposal.getTeam(), doctor);
         moveProposalToProject(proposal);
         removePendingProposal(proposal);
+
     }
+
+
+
 
 
 
@@ -214,6 +217,10 @@ public class ProposalService {
             proposalRepository.save(proposal);
         }
     }
+
+
+
+
 
 
 
@@ -260,12 +267,12 @@ public class ProposalService {
 
     private Proposal getProposalById(Long proposalId) {
     return proposalRepository.findById(proposalId)
-            .orElseThrow(() -> new EntityNotFoundException("Proposal with ID " + proposalId + " not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Proposal with ID " + proposalId + " not found"));
 }
 
     //   Get Doctor by ID
     private Doctor getDoctorById(Long doctorId) {
         return doctorRepository.findById(doctorId)
-                .orElseThrow(() -> new RuntimeException("Doctor not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Doctor not found"));
     }
 }

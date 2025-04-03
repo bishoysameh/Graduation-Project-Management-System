@@ -6,6 +6,7 @@ import com.graduationProject.gpManagementSystem.enums.Role;
 import com.graduationProject.gpManagementSystem.enums.Status;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -26,11 +27,20 @@ public class Student extends User{
     
    
 //kant long wna 5letha Long
+    @Column(nullable = false)
     private int level ;
+
+    @Column(nullable = false)
     private String department;
+
+    @Column(nullable = false, unique = true)
     private String studentId;
+
     private double gpa;
+
+    @Column(nullable = false)
     private int creditHours;
+    
     private boolean isTeamLeader ;
 
 //Define the many-to-one relationship with Team

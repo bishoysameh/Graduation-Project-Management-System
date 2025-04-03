@@ -34,18 +34,24 @@ function connect(event) {
 
 
 function onConnected() {
-    // Subscribe to the Public Topic
-    stompClient.subscribe('/topic/public', onMessageReceived);
 
-    //this is not important can be removed this is not store in database 
-    // Tell your username to the server
-    stompClient.send("/app/chat.addUser",
-        {},
-        JSON.stringify({sender: username, type: 'JOIN'})
-    )
+
+    // Subscribe to the Public Topic
+    // stompClient.subscribe('/topic/public', onMessageReceived);
+
+
+//replace 52 with chat rooom id you want to send messages to it 
+    stompClient.subscribe('/chatroom/52' , onMessageReceived);
+
+//     //this is not important can be removed this is not store in database 
+//     // Tell your username to the server
+//     stompClient.send("/app/chat.addUser",
+//         {},
+//         JSON.stringify({sender: username, type: 'JOIN'})
+//     )
 
     connectingElement.classList.add('hidden');
-}
+ }
 
 
 function onError(error) {

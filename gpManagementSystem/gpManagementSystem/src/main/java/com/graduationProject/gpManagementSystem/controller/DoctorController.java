@@ -3,12 +3,15 @@ package com.graduationProject.gpManagementSystem.controller;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.graduationProject.gpManagementSystem.dto.ApiResponse;
 import com.graduationProject.gpManagementSystem.model.Doctor;
 import com.graduationProject.gpManagementSystem.service.DoctorService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,16 +50,37 @@ public class DoctorController {
          doctorService.addDoctor(doctor);
     }
 
+
+
+
+    
     //contain error
     @PutMapping("/{id}")
-    public Doctor updateDoctor(@PathVariable Long id, @RequestBody Doctor doctor) {        
-        return doctorService.updateDoctor(id,doctor);
+    public ResponseEntity<ApiResponse<Doctor>> updateDoctor(@PathVariable Long id, @RequestBody Doctor doctor) {        
+        Doctor updatedDoctor =  doctorService.updateDoctor(id,doctor);
+
+        ApiResponse<Doctor> response = new ApiResponse<>(
+        "success", 
+        "Doctor updated successfully", 
+        updatedDoctor
+    );
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+
+
+
 
     //work
     @DeleteMapping("/{id}")
-    public void deleteDoctor(@PathVariable Long id ){
-         doctorService.deleteDoctor(id);
+    public ResponseEntity<ApiResponse<Void>> deleteDoctor(@PathVariable Long id ){
+          doctorService.deleteDoctor(id);
+          
+          ApiResponse<Void> successResponse = new ApiResponse<>(
+            "success",
+            "doctor deleted successfully"
+        );
+        return ResponseEntity.status(HttpStatus.OK).body(successResponse);
     }
     
 

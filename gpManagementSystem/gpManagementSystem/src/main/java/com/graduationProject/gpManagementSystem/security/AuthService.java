@@ -17,8 +17,14 @@ import lombok.RequiredArgsConstructor;
 import com.graduationProject.gpManagementSystem.dto.*;
 import com.graduationProject.gpManagementSystem.enums.Role;
 import com.graduationProject.gpManagementSystem.enums.Status;
+import com.graduationProject.gpManagementSystem.exception.InvalidPasswordException;
+import com.graduationProject.gpManagementSystem.exception.ResourceNotFoundException;
+import com.graduationProject.gpManagementSystem.exception.UserAlreadyExistException;
+import com.graduationProject.gpManagementSystem.model.Admin;
+import com.graduationProject.gpManagementSystem.model.Doctor;
 import com.graduationProject.gpManagementSystem.model.Student;
 import com.graduationProject.gpManagementSystem.model.User;
+import com.graduationProject.gpManagementSystem.repository.StudentRepository;
 import com.graduationProject.gpManagementSystem.repository.UserRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -40,15 +46,33 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder; 
     private final UserRepository repository;
     private final JwtUtils jwtService;
-    private final AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;    
+    private final StudentRepository studentRepository;
 
 
 
 
 
 
+     public Student registerStudent(CreateStudentDTO request) {
 
-     public LoginResponseDTO registerStudent(CreateStudentDTO request) {
+//put validation here 
+        if (repository.existsByEmail(request.getEmail())) {
+                throw new UserAlreadyExistException("A user with this email already exists.");
+            }
+
+        // Check if studentId already exists
+        if (studentRepository.existsByStudentId(request.getStudentId())) {
+            throw new UserAlreadyExistException("A user with this student ID already exists.");
+        }
+
+
+        if (!isValidPassword(request.getPassword())) {
+            throw new InvalidPasswordException("Password must be at least 8 characters long and include uppercase, lowercase, digit, and special character.");
+        }
+
+
+
      var user = com.graduationProject.gpManagementSystem.model.Student.builder()
     
      .username(request.getUsername())
@@ -64,13 +88,24 @@ public class AuthService {
      .isTeamLeader(false)
      .build();
          repository.save(user);
-           return LoginResponseDTO.builder().message("Registration pending approval").build();
+        //    return LoginResponseDTO.builder().message("Registration pending approval").build();
+        return user;
     }
 
 
 
 
-    public LoginResponseDTO registerDoctor(CreateDoctorDTO request) {
+    public Doctor registerDoctor(CreateDoctorDTO request) {
+        //put validation here 
+        if (repository.existsByEmail(request.getEmail())) {
+            throw new UserAlreadyExistException("A user with this email already exists.");
+        }
+
+        
+        if (!isValidPassword(request.getPassword())) {
+            throw new InvalidPasswordException("Password must be at least 8 characters long and include uppercase, lowercase, digit, and special character.");
+        }
+
         var user = com.graduationProject.gpManagementSystem.model.Doctor.builder()
        
         .username(request.getUsername())
@@ -81,8 +116,9 @@ public class AuthService {
         .specialization(request.getSpecialization())
         .build();
             repository.save(user);
-              var jwtToken = jwtService.generateToken(user);
-              return LoginResponseDTO.builder().token(jwtToken).build();
+            //   var jwtToken = jwtService.generateToken(user);
+            //   return LoginResponseDTO.builder().token(jwtToken).build();
+            return user;
           
        }
 
@@ -90,8 +126,20 @@ public class AuthService {
 
 
 
-       public LoginResponseDTO registerAdmin(CreateAdminDTO request) {
-        var user = com.graduationProject.gpManagementSystem.model.Admin.builder()
+       public Admin registerAdmin(CreateAdminDTO request) {
+        ////put validation here 
+        if (repository.existsByEmail(request.getEmail())) {
+            throw new UserAlreadyExistException("A user with this email already exists.");
+        }
+
+
+        if (!isValidPassword(request.getPassword())) {
+            throw new InvalidPasswordException("Password must be at least 8 characters long and include uppercase, lowercase, digit, and special character.");
+        }
+
+
+
+        var user = Admin.builder()
        
         .username(request.getUsername())
         .email(request.getEmail())
@@ -100,8 +148,9 @@ public class AuthService {
         .status(Status.ACCEPTED)
         .build();
             repository.save(user);
-              var jwtToken = jwtService.generateToken(user);
-              return LoginResponseDTO.builder().token(jwtToken).build();
+            //   var jwtToken = jwtService.generateToken(user);
+            //   return LoginResponseDTO.builder().token(jwtToken).build();
+          return user;
           
        }
 
@@ -160,6 +209,9 @@ public class AuthService {
       }
   }
 
+
+
+
   public void rejectUserRegistration(int userId) {
     Optional<User> userOptional = repository.findById(userId);
     if (userOptional.isPresent()) {
@@ -171,6 +223,41 @@ public class AuthService {
     }
 }
 
+
+
+
+
+public void changePassword(Integer userId, ChangePasswordDTO request) {
+
+    User user = repository.findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("user not found"));
+
+    if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+        throw new InvalidPasswordException("Old password is incorrect.");
+    }
+
+    if (request.getOldPassword().equals(request.getNewPassword())) {
+        throw new InvalidPasswordException("New password must be different from the old password.");
+    }
+
+    if (!isValidPassword(request.getNewPassword())) {
+        throw new InvalidPasswordException("New password must be at least 8 characters long and include uppercase, lowercase, digit, and special character.");
+    }
+
+    user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+    repository.save(user);
+}
+
+
+
+
+
+
+ // utility functios
+ private boolean isValidPassword(String password) {
+    String passwordPattern = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
+    return password.matches(passwordPattern);
+}
 
 
 

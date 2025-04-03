@@ -3,13 +3,13 @@ package com.graduationProject.gpManagementSystem.dto;
 public class ApiResponse<T> {
     private String status;  // "success" or "error"
     private String message; // Human-readable message
-    // private T data;         // Response data (optional)
+    private T data;         // Response data (optional)
 
-    // public ApiResponse(String status, String message  , T data  ) {
-    //     this.status = status;
-    //     this.message = message;
-    //     this.data = data;
-    // }
+    public ApiResponse(String status, String message  , T data  ) {
+        this.status = status;
+        this.message = message;
+        this.data = data;
+    }
 
     public ApiResponse(String status, String message  ) {
         this.status = status;
@@ -33,11 +33,11 @@ public class ApiResponse<T> {
         this.message = message;
     }
 
-    // public T getData() {
-    //     return data;
-    // }
+    public T getData() {
+        return data;
+    }
 
-    // public void setData(T data) {
-    //     this.data = data;
-    // }
+    public void setData(T data) {
+        this.data = data;
+    }
 }

@@ -3,6 +3,7 @@ package com.graduationProject.gpManagementSystem.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,12 +34,18 @@ public class ProposalController {
     private ProposalService proposalService;
 
 
+
     //  Submit Proposal with pdf file
     @PostMapping(value = "/submit" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<Proposal>> submitProposal(@RequestPart("proposal") String proposalJson , @RequestPart("file") MultipartFile file ) {
          ProposalRequest request = JsonUtil.convertJsonToObject(proposalJson, ProposalRequest.class);
 
-    return proposalService.submitProposal(request , file);
+     proposalService.submitProposal(request , file);
+     ApiResponse<Proposal> response = new ApiResponse<>(
+        "success" ,
+        "Proposal sended successfully"
+     );
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
 
@@ -58,19 +65,32 @@ public class ProposalController {
 
     // ✅ Approve Proposal → Moves Proposal to Project
     @PutMapping("/{doctorId}/approve/{proposalId}")
-    public ResponseEntity<String> approveProposal(@PathVariable Long doctorId, @PathVariable Long proposalId) {
-        proposalService.approveProposal(doctorId, proposalId);
-        return ResponseEntity.ok("Proposal Approved and Moved to Project");
+    public ResponseEntity<ApiResponse<Void>> approveProposal(@PathVariable Long doctorId, @PathVariable Long proposalId) {
+       proposalService.approveProposal(doctorId, proposalId);
+       
+       ApiResponse<Void> response = new ApiResponse<>(
+        "success",
+        "Proposal approved and moved to a project successfully."
+    );
+    return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+
+
 
 
 
 
     // ✅ Reject Proposal → Keeps it in Proposals Table
     @PutMapping("/{doctorId}/reject/{proposalId}")
-    public ResponseEntity<String> rejectProposal(@PathVariable Long doctorId, @PathVariable Long proposalId) {
+    public ResponseEntity<ApiResponse<Void>> rejectProposal(@PathVariable Long doctorId, @PathVariable Long proposalId) {
         proposalService.rejectProposal(doctorId, proposalId);
-        return ResponseEntity.ok("Proposal Rejected");
+        ApiResponse<Void> response = new ApiResponse<>(
+            "success",
+            "Proposal rejected "
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
 

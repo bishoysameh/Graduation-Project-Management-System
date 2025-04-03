@@ -2,6 +2,7 @@ package com.graduationProject.gpManagementSystem.model;
 
 
 import jakarta.persistence.*;
+
 import lombok.AllArgsConstructor;
 // import lombok.Builder;
 import lombok.Data;
@@ -11,7 +12,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.graduationProject.gpManagementSystem.enums.Role;
 import com.graduationProject.gpManagementSystem.enums.Status;
@@ -28,19 +28,26 @@ import java.util.List;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 
+
 public class User implements UserDetails{
     @Id
     @GeneratedValue
     private Long id;
+
+    @Column(nullable = false)
     private String username;
+
+    @Column(nullable = false , unique = true)
     private String email;
+
+    @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
      private Role role ;
 
-     @Enumerated(EnumType.STRING)
-     private Status status;
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
 
 

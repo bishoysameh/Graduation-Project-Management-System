@@ -1,42 +1,211 @@
 package com.graduationProject.gpManagementSystem.exception;
 
+import java.time.LocalDateTime;
+
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+// import org.springframework.security.core.AuthenticationException;
+ import org.springframework.validation.FieldError;
+ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
 
 import com.graduationProject.gpManagementSystem.dto.ErrorResponse;
+
+// import jakarta.validation.ConstraintViolation;
+// import jakarta.validation.ConstraintViolationException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(CustomException.class)
-    public ResponseEntity<ErrorResponse> handleCustomException(CustomException ex) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getErrorCode(), ex.getErrorMessage());
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(UserAlreadyExistException.class)
+    public ResponseEntity<Object> userAlreadyExistExceptionHandling(UserAlreadyExistException exception, WebRequest request) {
+        return new ResponseEntity<>(new ErrorResponse(LocalDateTime.now(), exception.getMessage(),
+                request.getDescription(false), HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
     }
 
-    // @ExceptionHandler(ResourceNotFoundException.class)
-    // public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex) {
-    //     ErrorResponse errorResponse = new ErrorResponse(ex.getErrorCode(), ex.getErrorMessage());
-    //     return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
-    // }
 
-    // @ExceptionHandler(DuplicateEntryException.class)
-    // public ResponseEntity<ErrorResponse> handleDuplicateEntryException(DuplicateEntryException ex) {
-    //     ErrorResponse errorResponse = new ErrorResponse(ex.getErrorCode(), ex.getErrorMessage());
-    //     return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
-    // }
 
-    // @ExceptionHandler(InvalidInputException.class)
-    // public ResponseEntity<ErrorResponse> handleInvalidInputException(InvalidInputException ex) {
-    //     ErrorResponse errorResponse = new ErrorResponse(ex.getErrorCode(), ex.getErrorMessage());
-    //     return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-    // }
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Object> resourceNotFoundExceptionHandling(ResourceNotFoundException exception, WebRequest request) {
+        return new ResponseEntity<>(new ErrorResponse(LocalDateTime.now(), exception.getMessage(),
+                request.getDescription(false), HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
+    }
+
+
+    @ExceptionHandler(InvalidTeamSizeException.class)
+    public ResponseEntity<Object> handleInvalidTeamSizeException(InvalidTeamSizeException exception, WebRequest request) {
+        ErrorResponse errorDetails = new ErrorResponse(
+                LocalDateTime.now(),
+                exception.getMessage(),
+                request.getDescription(false),
+                HttpStatus.BAD_REQUEST
+        );
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+
+
+    @ExceptionHandler(InvalidStudentCountException.class)
+    public ResponseEntity<Object> handleInvalidStudentCountException(
+            InvalidStudentCountException exception, WebRequest request) {
+
+        ErrorResponse errorDetails = new ErrorResponse(
+                LocalDateTime.now(),
+                exception.getMessage(),
+                request.getDescription(false),
+                HttpStatus.BAD_REQUEST
+        );
+
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+
+
+
+    @ExceptionHandler(UnauthorizedActionException.class)
+public ResponseEntity<ErrorResponse> handleUnauthorizedActionException(UnauthorizedActionException exception, WebRequest request) {
+    ErrorResponse errorDetails = new ErrorResponse(
+            LocalDateTime.now(),
+            exception.getMessage(),
+            request.getDescription(false), // This will give the request URI or additional info
+            HttpStatus.FORBIDDEN // HTTP 403 Forbidden status code
+    );
+    
+    return new ResponseEntity<>(errorDetails, HttpStatus.FORBIDDEN);
+}
+
+
+
+
+
+@ExceptionHandler(InvalidActionException.class)
+public ResponseEntity<ErrorResponse> handleInvalidActionException(InvalidActionException ex, WebRequest request) {
+    ErrorResponse errorDetails = new ErrorResponse(
+        LocalDateTime.now(),
+        ex.getMessage(),
+        request.getDescription(false),
+        HttpStatus.BAD_REQUEST
+    );
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
+}
+
+
+
+@ExceptionHandler(InvalidPasswordException.class)
+public ResponseEntity<ErrorResponse> handleInvalidPasswordException(InvalidPasswordException ex, WebRequest request) {
+    ErrorResponse errorDetails = new ErrorResponse(
+        LocalDateTime.now(),
+        ex.getMessage(),
+        request.getDescription(false),
+        HttpStatus.BAD_REQUEST
+    );
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
+}
+
+
+
+
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
-        ErrorResponse errorResponse = new ErrorResponse("INTERNAL_SERVER_ERROR", "An unexpected error occurred");
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<Object> globalExceptionHandling(Exception exception, WebRequest request) {
+        return new ResponseEntity<>(new ErrorResponse(LocalDateTime.now()
+                , exception.getMessage(), request.getDescription(false), HttpStatus.INTERNAL_SERVER_ERROR),
+                HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+
+
+
+
+    ///////////////////////////////////////////////////////////////////////////
+    /// 
+    /// 
+    /// 
+    /// 
+    /// 
+    /// 
+    /// 
+    /// 
+    /// 
+    /// 
+    /// 
+    /// 
+    ///
+    /// 
+    ///  
+
+
+
+
+
+
+
+     @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Object> methodArgumentNotValidExceptionHandling(MethodArgumentNotValidException exception) {
+
+        ValidationFailedResponse error = ValidationFailedResponse
+                .builder()
+                .httpStatus(HttpStatus.BAD_REQUEST)
+                .timeStamp(LocalDateTime.now())
+                .build();
+
+        for (FieldError fieldError : exception.getBindingResult().getFieldErrors()) {
+
+            error.getViolations().add(ViolationErrors
+                    .builder()
+                    .fieldName(fieldError.getField())
+                    .message(fieldError.getDefaultMessage())
+                    .build());
+        }
+
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+
+    
+//     @ExceptionHandler(ConstraintViolationException.class)
+//     ResponseEntity<Object> onConstraintValidationException(ConstraintViolationException e) {
+
+//         ValidationFailedResponse error = ValidationFailedResponse
+//                 .builder()
+//                 .httpStatus(HttpStatus.BAD_REQUEST)
+//                 .timeStamp(LocalDateTime.now())
+//                 .build();
+
+//         for (ConstraintViolation<?> violation : e.getConstraintViolations()) {
+
+//             error.getViolations().add(ViolationErrors
+//                     .builder()
+//                     .fieldName(violation.getPropertyPath().toString())
+//                     .message(violation.getMessage())
+//                     .build());
+//         }
+
+//         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+//     }
+
+    // @ExceptionHandler(RuntimeException.class)
+    // public ResponseEntity<Object> runtimeExceptionHandling(RuntimeException exception, WebRequest request) {
+    //     return new ResponseEntity<>(new ErrorResponse(LocalDateTime.now(), exception.getMessage(),
+    //             request.getDescription(false), HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
+    // }
+
+    // @ExceptionHandler(Exception.class)
+    // public ResponseEntity<Object> globalExceptionHandling(Exception exception, WebRequest request) {
+    //     return new ResponseEntity<>(new ErrorResponse(LocalDateTime.now()
+    //             , exception.getMessage(), request.getDescription(false), HttpStatus.INTERNAL_SERVER_ERROR),
+    //             HttpStatus.INTERNAL_SERVER_ERROR);
+    // }
+
+    // @ExceptionHandler(AuthenticationException.class)
+    // public ResponseEntity<Object> authenticationExceptionHandling(AuthenticationException exception, WebRequest request) {
+    //     return new ResponseEntity<>(new ErrorResponse(LocalDateTime.now()
+    //             , String.format("Incorrect email or password credentials provided. [ %s ]", exception.getMessage()),
+    //             request.getDescription(false), HttpStatus.UNAUTHORIZED), HttpStatus.UNAUTHORIZED);
+    // }
+
+
 }

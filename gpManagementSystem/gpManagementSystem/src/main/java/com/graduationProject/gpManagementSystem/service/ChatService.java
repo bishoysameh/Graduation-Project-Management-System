@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import com.graduationProject.gpManagementSystem.enums.MessageType;
+import com.graduationProject.gpManagementSystem.exception.ResourceNotFoundException;
 import com.graduationProject.gpManagementSystem.model.ChatRoom;
 import com.graduationProject.gpManagementSystem.model.Message;
 import com.graduationProject.gpManagementSystem.model.User;
@@ -32,9 +33,9 @@ public class ChatService {
 
     public Message sendMessage(Long chatRoomId, Long senderId, String content , MessageType type ) {
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
-            .orElseThrow(() -> new IllegalArgumentException("ChatRoom not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("ChatRoom not found"));
         User sender = userRepository.findById(senderId)
-            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         Message message = new Message();
         message.setChatRoom(chatRoom);

@@ -3,11 +3,15 @@ package com.graduationProject.gpManagementSystem.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Service;
 
 import com.graduationProject.gpManagementSystem.dto.TeamRequest;
-import com.graduationProject.gpManagementSystem.exception.CustomException;
+import com.graduationProject.gpManagementSystem.enums.Status;
+import com.graduationProject.gpManagementSystem.exception.InvalidStudentCountException;
+import com.graduationProject.gpManagementSystem.exception.InvalidTeamSizeException;
+import com.graduationProject.gpManagementSystem.exception.ResourceNotFoundException;
+import com.graduationProject.gpManagementSystem.exception.UserAlreadyExistException;
 import com.graduationProject.gpManagementSystem.model.Student;
 import com.graduationProject.gpManagementSystem.model.Team;
 import com.graduationProject.gpManagementSystem.repository.TeamRepository;
@@ -38,80 +42,93 @@ private final StudentService studentService;
          teamRepository.save(team);
     }
 
+
+
+
+
      // Update an existing doctor
      public Team updateTeam(Long id, Team teamDetails) {
-        return teamRepository.findById(id).map(team -> {
+
+           Team updatedTeam = teamRepository.findById(id).map(team -> {
            team.setName(teamDetails.getName());
            return teamRepository.save(team);
-        }).orElseThrow(() -> new RuntimeException("Team not found"));
-    }
-
-    public void deleteTeam(Long id ){
-         teamRepository.deleteById(id);
+           }).orElseThrow(() -> new ResourceNotFoundException("Team not found")); 
+          return updatedTeam;
     }
 
 
 
 
+    // public void deleteTeam(Long id ){
+    //      teamRepository.deleteById(id);
+    // }
 
 
-    public ResponseEntity<?> createTeam(String studentId , TeamRequest request) {
-          // Get the requesting student
+
+    public void deleteTeam(Long id) {
+                 teamRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Team not found"));
+        teamRepository.deleteById(id);
+    }
+    
+
+
+
+
+
+
+
+    public Team createTeam(String studentId , TeamRequest request) {
         Optional<Student> requesterOpt = studentService.findByStudentId(studentId);
 
         if (requesterOpt.isEmpty()) {
-            return ResponseEntity.badRequest().body("Requesting student not found.");
-        }
+            throw new ResourceNotFoundException("Requesting student not found");        }
 
         Student requester = requesterOpt.get();
 
-        // Ensure the requester is not already in a team
         if (requester.getTeam() != null) {
-            throw new CustomException("STUDENT_ALREADY_IN_TEAM", "You are already in a team and cannot create another one.");
+            throw new UserAlreadyExistException("You are already in a team and cannot create another one.");
         }
 
-        // Ensure exactly 6 student IDs are provided
         if (request.getStudentIds().size() != 6) {
-            return ResponseEntity.badRequest().body("A team must have exactly 6 members.");
+            throw new InvalidTeamSizeException("A team must have exactly 6 members");
         }   
 
-         // Fetch students by studentId
          List<Student> students = studentService.findByStudentIds(request.getStudentIds());
 
-            // Validate all students exist
         if (students.size() != 6) {
-            return ResponseEntity.badRequest().body("Some student IDs are invalid.");
+            throw new InvalidStudentCountException("Some student IDs are invalid.");
         }
 
 
         if (students.stream().anyMatch(student-> student.getTeam() != null)){
-            return ResponseEntity.badRequest().body("One or more students are already in a team.");
+            throw new UserAlreadyExistException("One or more students are already in a team.");
+        }
+
+
+        /////////////////////////
+        if (students.stream().anyMatch(student-> student.getStatus() != Status.ACCEPTED)){
+            throw new UserAlreadyExistException("One or more students still pinding");
         }
 
 
 
+        //////////////////////////////
 
-           //the first student in the team when created become the team leader 
            students.get(0).setTeamLeader(true);
         
-        // Create and save the team
         Team newTeam = new Team();
         newTeam.setName(request.getName());
-        newTeam.setStudents(students);
-
-     
+        newTeam.setStudents(students);    
         teamRepository.save(newTeam);
 
 
-        // Assign the team to each student
         for (Student student : students) {
             student.setTeam(newTeam);
             studentService.saveStudent(student);
         }
 
          teamRepository.save(newTeam);
-
-         return ResponseEntity.ok().body("Team created successfully");
+         return newTeam;
     }
-
  }
