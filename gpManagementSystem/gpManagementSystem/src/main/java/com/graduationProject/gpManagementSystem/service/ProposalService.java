@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.UrlResource;
@@ -62,6 +63,13 @@ public class ProposalService {
 
     
     private static final String UPLOAD_DIR = "uploads/proposals";
+
+
+
+        public Optional<Proposal> getOneProposalById(Long id){
+           return proposalRepository.findById(id);
+    }
+
 
 
 

@@ -1,6 +1,8 @@
 package com.graduationProject.gpManagementSystem.controller;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -46,5 +48,25 @@ public class SprintController {
         List<Sprint> sprints = sprintService.getSprintsByProject(projectId);
         return ResponseEntity.ok(sprints);
     }
+
+
+
+
+
+     // Endpoint to get the Burndown Chart data for a specific sprint
+    //  @GetMapping("/{sprintId}/burndown")
+    //  public BurndownChartData getBurndownChart(@PathVariable Long sprintId) {
+    //      // Fetch Burndown Chart data (number of tasks completed vs. remaining)
+    //      return sprintService.generateBurndownChartData(sprintId);
+    //  }
+
+
+
+
+        @GetMapping("/{sprintId}/burndown")
+        public ResponseEntity<Map<LocalDate, Integer>> getBurndown(@PathVariable Long sprintId) {
+            return ResponseEntity.ok(sprintService.getBurndownData(sprintId));
+        }
+
 
 }

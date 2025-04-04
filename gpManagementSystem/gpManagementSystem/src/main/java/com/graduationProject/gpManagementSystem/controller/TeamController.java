@@ -76,6 +76,24 @@ public class TeamController {
 
 
 
+      @GetMapping("/doctor/{doctorId}")
+public List<Team> getTeamsByDoctorId(@PathVariable Long doctorId) {
+
+
+    return teamService.getTeamsByDoctorId(doctorId);
+    // List<Team> teams = teamService.getTeamsByDoctorId(doctorId);
+    
+    // ApiResponse<List<Team>> response = new ApiResponse<>(
+    //     "success",
+    //     "Teams fetched successfully",
+    //     teams
+    // );
+    
+    // return ResponseEntity.ok(response);
+    
+}
+
+
 
 
     // @PostMapping

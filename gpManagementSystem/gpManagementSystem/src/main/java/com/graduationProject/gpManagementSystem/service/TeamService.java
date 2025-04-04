@@ -38,6 +38,15 @@ private final StudentService studentService;
            return teamRepository.findById(id);
     }
 
+
+
+    public List<Team> getTeamsByDoctorId(Long doctorId) {
+        return teamRepository.findByDoctorId(doctorId);
+    }
+
+    
+    
+
     public void addTeam (Team team){
          teamRepository.save(team);
     }

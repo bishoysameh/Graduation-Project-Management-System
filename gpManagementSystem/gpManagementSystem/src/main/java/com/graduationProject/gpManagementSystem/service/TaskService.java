@@ -12,7 +12,7 @@ import com.graduationProject.gpManagementSystem.repository.ProjectRepository;
 
 import org.springframework.stereotype.Service;
 
-
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,12 +41,12 @@ public class TaskService {
         task.setTitle(taskRequest.getTitle());
         task.setDescription(taskRequest.getDescription());
         task.setTaskStatus(TaskStatus.TODO);
+
+        /////////4/4/2025/////////
+            // task.setStartDate(LocalDate.now());        
+        /////////4/4/2025/////////
     
-        // ✅ Fetch the Sprint entity before assigning it
-        // Sprint sprint = sprintRepository.findById(taskRequest.getSprintId())
-        //         .orElseThrow(() -> new RuntimeException("Sprint not found"));
-        // task.setSprint(sprint);
-    
+  
         // ✅ Fetch the Project entity before assigning it
         Project project = projectRepository.findById(taskRequest.getProjectId())
                 .orElseThrow(() -> new ResourceNotFoundException("Project not found"));
@@ -55,6 +55,12 @@ public class TaskService {
     
         taskRepository.save(task);
        return task;
+
+             // ✅ Fetch the Sprint entity before assigning it
+        // Sprint sprint = sprintRepository.findById(taskRequest.getSprintId())
+        //         .orElseThrow(() -> new RuntimeException("Sprint not found"));
+        // task.setSprint(sprint);
+    
     }
 
 
@@ -193,6 +199,19 @@ public Optional<Task> getTaskById(Long id){
             .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
 
     task.setTaskStatus(status);
+    /////////////////////4/4/2025///////////////
+   if (status == TaskStatus.INPROGRESS) {
+        task.setStartDate(LocalDate.now()); 
+    }
+
+    
+    if (status == TaskStatus.DONE) {
+        task.setEndDate(LocalDate.now()); 
+    }
+
+    
+        /////////////////////4/4/2025///////////////
+
     Task updatedTask = taskRepository.save(task);
 
     return updatedTask;

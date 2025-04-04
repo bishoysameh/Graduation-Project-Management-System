@@ -1,6 +1,7 @@
 package com.graduationProject.gpManagementSystem.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,7 @@ import java.io.IOException;
 
 
 
+
 @RestController
 @RequestMapping("/api/proposals")
 public class ProposalController {
@@ -34,6 +36,14 @@ public class ProposalController {
     private ProposalService proposalService;
 
 
+
+    //get proposal by id
+    @GetMapping("/{id}")
+    public Optional<Proposal> getProposalById(@PathVariable Long id) {
+        return proposalService.getOneProposalById(id);
+      }
+
+    
 
     //  Submit Proposal with pdf file
     @PostMapping(value = "/submit" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

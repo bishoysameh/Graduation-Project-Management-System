@@ -1,9 +1,10 @@
 package com.graduationProject.gpManagementSystem.service;
 
-import java.util.List;
+// import java.util.List;
 import java.util.Optional;
 
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 // import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +21,17 @@ public class DoctorService {
     this.doctorRepository = doctorRepository;
 }
 
-    public List<Doctor> getAllDoctors() {
-        return doctorRepository.findAll();  
+    // public List<Doctor> getAllDoctors() {
+    //     return doctorRepository.findAll();  
+    // }
+
+    public Page<Doctor> getAllDoctors(Pageable pageable) {
+        return doctorRepository.findAll(pageable);  
     }
+
+   
+
+
 
     public Optional<Doctor> getDoctorById(Long id){
            return doctorRepository.findById(id);

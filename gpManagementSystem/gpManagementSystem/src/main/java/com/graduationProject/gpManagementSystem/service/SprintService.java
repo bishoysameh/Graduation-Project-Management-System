@@ -1,7 +1,11 @@
 package com.graduationProject.gpManagementSystem.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.graduationProject.gpManagementSystem.dto.ApiResponse;
 import com.graduationProject.gpManagementSystem.dto.SprintRequest;
 import com.graduationProject.gpManagementSystem.enums.SprintStatus;
+import com.graduationProject.gpManagementSystem.enums.TaskStatus;
 import com.graduationProject.gpManagementSystem.exception.ResourceNotFoundException;
 import com.graduationProject.gpManagementSystem.model.Project;
 import com.graduationProject.gpManagementSystem.model.Sprint;
@@ -100,4 +105,42 @@ public class SprintService {
     //     sprint.setStatus(SprintStatus.ENDED);
     //     sprintRepository.save(sprint);
     // }
+
+
+
+
+
+
+public Map<LocalDate, Integer> getBurndownData(Long sprintId) {
+    Sprint sprint = sprintRepository.findById(sprintId)
+            .orElseThrow(() -> new ResourceNotFoundException("Sprint not found"));
+    
+    List<Task> tasks = taskRepository.findBySprintId(sprintId);
+    LocalDate start = sprint.getStartTime().toLocalDate();
+    LocalDate end = sprint.getEndTime().toLocalDate();
+    
+    Map<LocalDate, Integer> dailyRemaining = new LinkedHashMap<>();
+    
+    // Initialize with all tasks at start
+    int remainingTasks = tasks.size();
+    dailyRemaining.put(start.minusDays(1), remainingTasks); // Day before sprint starts
+    
+    // Group completed tasks by their completion date
+    Map<LocalDate, Long> dailyCompletions = tasks.stream()
+            .filter(task -> task.getTaskStatus() == TaskStatus.DONE)
+            .filter(task -> task.getEndDate() != null)
+            .collect(Collectors.groupingBy(
+                Task::getEndDate,
+                Collectors.counting()
+            ));
+    
+    // Calculate remaining tasks for each day
+    for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1)) {
+        // Subtract tasks completed on this date
+        remainingTasks -= dailyCompletions.getOrDefault(date, 0L).intValue();
+        dailyRemaining.put(date, remainingTasks);
+    }
+    
+    return dailyRemaining;
+}
 }
