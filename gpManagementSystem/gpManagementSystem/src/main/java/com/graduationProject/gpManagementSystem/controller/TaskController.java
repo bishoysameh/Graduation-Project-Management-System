@@ -160,4 +160,11 @@ public class TaskController {
         return ResponseEntity.ok(tasks);
     }
 
+
+
+    @GetMapping("/sprint/{sprintId}")
+    public ResponseEntity<List<Task>> getTasksBySprintId(@PathVariable Long sprintId) {
+        List<Task> tasks = taskService.getTasksBySprintId(sprintId);
+        return ResponseEntity.ok(tasks);
+    }
 }

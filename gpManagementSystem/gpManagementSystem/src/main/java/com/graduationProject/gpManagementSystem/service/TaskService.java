@@ -225,4 +225,10 @@ public List<Task> getTasksBySprintAndStatus(Long sprintId, TaskStatus status) {
     return taskRepository.findBySprintIdAndTaskStatus(sprintId, status);
 }
 
+
+public List<Task> getTasksBySprintId(Long sprintId) {
+    return taskRepository.findBySprintId(sprintId);
+}
+
+
 }

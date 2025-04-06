@@ -114,6 +114,7 @@ public class AuthService {
         .role(Role.DOCTOR)
         .status(Status.ACCEPTED)
         .specialization(request.getSpecialization())
+        .department(request.getDepartment())
         .build();
             repository.save(user);
             //   var jwtToken = jwtService.generateToken(user);

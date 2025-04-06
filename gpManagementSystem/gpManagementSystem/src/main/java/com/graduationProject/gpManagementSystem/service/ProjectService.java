@@ -91,4 +91,12 @@ public void deleteProject(Long id) {
 }
 
 
+
+
+public Project getProjectByTeamId(Long teamId) {
+    return projectRepository.findByTeamId(teamId)
+        .orElseThrow(() -> new ResourceNotFoundException("Project not found for team ID: " + teamId));
+}
+
+
  }

@@ -1,5 +1,6 @@
 package com.graduationProject.gpManagementSystem.repository;
 
+import com.graduationProject.gpManagementSystem.enums.Department;
 import com.graduationProject.gpManagementSystem.model.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -10,5 +11,8 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     Optional<Student> findByStudentId(String studentId);
     List<Student> findByStudentIdIn(List<String> studentIds);
     boolean existsByStudentId(String studentId);
+    List<Student> findByTeamId(Long teamId);
+    List<Student> findByTeamIsNull();
+    List<Student> findByTeamIsNullAndDepartment(Department department);
 
 }

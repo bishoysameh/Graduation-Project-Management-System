@@ -69,4 +69,23 @@ public class SprintController {
         }
 
 
+
+
+    //     @GetMapping("/project/{projectId}")
+    // public List<Sprint> getSprintsByProjectId(@PathVariable Long projectId) {
+
+    //     return sprintService.getSprintsByProjectId(projectId);
+
+        // List<Sprint> sprints = sprintService.getSprintsByProjectId(projectId);
+
+        // ApiResponse<List<Sprint>> response = new ApiResponse<>(
+        //     "success",
+        //     "Sprints retrieved successfully",
+        //     sprints
+        // );
+
+        // return ResponseEntity.ok(response);
+    //}
+
+
 }

@@ -3,6 +3,7 @@ package com.graduationProject.gpManagementSystem.model;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.graduationProject.gpManagementSystem.enums.TaskStatus;
 
@@ -42,6 +43,7 @@ public class Task {
 
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "sprint_id" , referencedColumnName = "id")
     private Sprint sprint;
 

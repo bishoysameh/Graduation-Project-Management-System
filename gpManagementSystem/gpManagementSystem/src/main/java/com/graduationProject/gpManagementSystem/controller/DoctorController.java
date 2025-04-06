@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.graduationProject.gpManagementSystem.dto.ApiResponse;
+import com.graduationProject.gpManagementSystem.dto.CreateDoctorDTO;
+
 import com.graduationProject.gpManagementSystem.model.Doctor;
 import com.graduationProject.gpManagementSystem.service.DoctorService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -85,7 +87,7 @@ public ResponseEntity<List<Doctor>> getAllDoctors(
     
     //contain error
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Doctor>> updateDoctor(@PathVariable Long id, @RequestBody Doctor doctor) {        
+    public ResponseEntity<ApiResponse<Doctor>> updateDoctor(@PathVariable Long id, @RequestBody CreateDoctorDTO doctor) {        
         Doctor updatedDoctor =  doctorService.updateDoctor(id,doctor);
 
         ApiResponse<Doctor> response = new ApiResponse<>(
@@ -114,6 +116,15 @@ public ResponseEntity<List<Doctor>> getAllDoctors(
     
 
 
-    
-  
+
+
+    @GetMapping("/same-department/{studentId}")
+    public ResponseEntity<List<Doctor>> getDoctorsWithSameDepartment(@PathVariable Long studentId) {
+        List<Doctor> doctors = doctorService.findDoctorsByDepartmentFromStudent(studentId);
+        return ResponseEntity.ok(doctors);
+    }
+
+
+
+
 }

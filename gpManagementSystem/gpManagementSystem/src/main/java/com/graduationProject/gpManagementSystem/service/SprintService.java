@@ -143,4 +143,13 @@ public Map<LocalDate, Integer> getBurndownData(Long sprintId) {
     
     return dailyRemaining;
 }
+
+
+
+
+// public List<Sprint> getSprintsByProjectId(Long projectId) {
+//     return sprintRepository.findByProjectId(projectId);
+// }
+
+
 }

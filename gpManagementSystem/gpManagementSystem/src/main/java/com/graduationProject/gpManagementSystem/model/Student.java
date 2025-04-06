@@ -2,12 +2,15 @@ package com.graduationProject.gpManagementSystem.model;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.graduationProject.gpManagementSystem.enums.Department;
 import com.graduationProject.gpManagementSystem.enums.Role;
 import com.graduationProject.gpManagementSystem.enums.Status;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -30,8 +33,11 @@ public class Student extends User{
     @Column(nullable = false)
     private int level ;
 
-    @Column(nullable = false)
-    private String department;
+    // @Column(nullable = false)
+    // private String department;
+
+    @Enumerated(EnumType.STRING)
+    private Department department;
 
     @Column(nullable = false, unique = true)
     private String studentId;
@@ -45,6 +51,7 @@ public class Student extends User{
 
 //Define the many-to-one relationship with Team
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "team_id", referencedColumnName = "id")
     private Team team;
 
@@ -52,7 +59,7 @@ public class Student extends User{
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     private List<Task> tasks;
 
-    public Student(int level, String department, String studentId, double gpa, int creditHours , boolean isTeamLeader) {
+    public Student(int level, Department department, String studentId, double gpa, int creditHours , boolean isTeamLeader) {
         this.level = level;
         this.department = department;
         this.studentId = studentId;
@@ -63,7 +70,7 @@ public class Student extends User{
 
     @Builder(builderMethodName = "studentBuilder")
     public Student(Long id, String username, String email, String password, Role role, Status status, int level,
-            String department, String studentId, double gpa, int creditHours,boolean isTeamLeader , List<ChatRoom> chatRooms , List<Message> messages) {
+            Department department, String studentId, double gpa, int creditHours,boolean isTeamLeader , List<ChatRoom> chatRooms , List<Message> messages) {
         super(id, username, email, password, role, status, chatRooms , messages);
         this.level = level;
         this.department = department;
@@ -74,7 +81,7 @@ public class Student extends User{
     }
     
 
-    public Student(int level, String department, String studentId, double gpa, int creditHours,boolean isTeamLeader, Team team,
+    public Student(int level, Department department, String studentId, double gpa, int creditHours,boolean isTeamLeader, Team team,
             List<Task> tasks) {
         this.level = level;
         this.department = department;
@@ -87,7 +94,7 @@ public class Student extends User{
     }
 
     public Student(Long id, String username, String email, String password, Role role, Status status, int level,
-            String department, String studentId, double gpa, int creditHours, Team team,
+            Department department, String studentId, double gpa, int creditHours, Team team,
             List<Task> tasks , List<ChatRoom> chatRooms , List<Message> messages) {
         super(id, username, email, password, role, status, chatRooms , messages);
         this.level = level;
@@ -107,11 +114,11 @@ public class Student extends User{
         this.level = level;
     }
 
-    public String getDepartment() {
+    public Department getDepartment() {
         return department;
     }
 
-    public void setDepartment(String department) {
+    public void setDepartment(Department department) {
         this.department = department;
     }
 

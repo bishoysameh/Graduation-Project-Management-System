@@ -1,5 +1,6 @@
 package com.graduationProject.gpManagementSystem.dto;
 
+import com.graduationProject.gpManagementSystem.enums.Department;
 import com.graduationProject.gpManagementSystem.enums.Role;
 
 import jakarta.persistence.EnumType;
@@ -25,7 +26,7 @@ public class CreateStudentDTO {
     private String password;
 
     @NotBlank(message = "Department is required")
-    private String department;
+    private Department department;
 
     @NotNull(message = "Level is required")
     private int level ;

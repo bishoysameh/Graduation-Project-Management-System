@@ -41,7 +41,7 @@ function onConnected() {
 
 
 //replace 52 with chat rooom id you want to send messages to it 
-    stompClient.subscribe('/chatroom/52' , onMessageReceived);
+    stompClient.subscribe('/chatroom/1' , onMessageReceived);
 
 //     //this is not important can be removed this is not store in database 
 //     // Tell your username to the server
@@ -65,10 +65,10 @@ function sendMessage(event) {
     if(messageContent && stompClient) {
         var chatMessage = {
             //replace 52 with exiting chat room id 
-            chatRoomId: 52,
+            chatRoomId: 1,
 
             //replace senderId with user id which is logged in 
-            senderId: 7,
+            senderId: 1000,
 
             //replace username with actual sender username -- getUserById (Id in token)
             sender: username,

@@ -1,5 +1,6 @@
 package com.graduationProject.gpManagementSystem.dto;
 
+import com.graduationProject.gpManagementSystem.enums.Department;
 import com.graduationProject.gpManagementSystem.enums.Role;
 
 import jakarta.persistence.EnumType;
@@ -26,4 +27,7 @@ public class CreateDoctorDTO {
     @Enumerated(EnumType.STRING)
     private Role role ;
     private String specialization;
+    
+    @Enumerated(EnumType.STRING)
+    private Department department;
 }

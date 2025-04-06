@@ -93,5 +93,21 @@ public class ProjectController
     
 
 
+
+    @GetMapping("/team/{teamId}")
+public Project getProjectByTeamId(@PathVariable Long teamId) {
+ return  projectService.getProjectByTeamId(teamId);
+
+    // Project project = projectService.getProjectByTeamId(teamId);
+
+    // ApiResponse<Project> response = new ApiResponse<>(
+    //     "success",
+    //     "Project fetched successfully",
+    //     project
+    // );
+
+    // return ResponseEntity.ok(response);
+}
+
   
 }
