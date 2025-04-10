@@ -32,10 +32,12 @@ public class ChatService {
 
 
     public Message sendMessage(Long chatRoomId, Long senderId, String content , MessageType type ) {
+        System.out.println("senderId = " + senderId); 
+
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
             .orElseThrow(() -> new ResourceNotFoundException("ChatRoom not found"));
         User sender = userRepository.findById(senderId)
-            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("User not found" + senderId));
 
         Message message = new Message();
         message.setChatRoom(chatRoom);

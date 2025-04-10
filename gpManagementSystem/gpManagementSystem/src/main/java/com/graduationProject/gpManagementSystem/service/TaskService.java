@@ -1,14 +1,18 @@
 package com.graduationProject.gpManagementSystem.service;
 
 import com.graduationProject.gpManagementSystem.dto.TaskRequest;
+// import com.graduationProject.gpManagementSystem.enums.SprintStatus;
 import com.graduationProject.gpManagementSystem.enums.TaskStatus;
 import com.graduationProject.gpManagementSystem.exception.ResourceNotFoundException;
 import com.graduationProject.gpManagementSystem.exception.UnauthorizedActionException;
 import com.graduationProject.gpManagementSystem.model.*;
 import com.graduationProject.gpManagementSystem.repository.StudentRepository;
 import com.graduationProject.gpManagementSystem.repository.TaskRepository;
-import com.graduationProject.gpManagementSystem.repository.ProjectRepository;
 
+// import jakarta.transaction.Transactional;
+
+import com.graduationProject.gpManagementSystem.repository.ProjectRepository;
+// import com.graduationProject.gpManagementSystem.repository.SprintRepository;
 
 import org.springframework.stereotype.Service;
 
@@ -25,10 +29,11 @@ public class TaskService {
     private final ProjectRepository projectRepository;
 
 
-    public TaskService(TaskRepository taskRepository, StudentRepository studentRepository,  ProjectRepository projectRepository) {
+    public TaskService(TaskRepository taskRepository, StudentRepository studentRepository,  ProjectRepository projectRepository ) {
         this.taskRepository = taskRepository;
         this.studentRepository = studentRepository;
         this.projectRepository = projectRepository;
+        // this.sprintRepository = sprintRepository;
     }
 
 
@@ -231,4 +236,28 @@ public List<Task> getTasksBySprintId(Long sprintId) {
 }
 
 
+
+//to get tasks in backlog (if sprint id is assigned , tasks selected to specific sprints not apear in backlog )
+public List<Task> getTasksWithoutSprint() {
+    return taskRepository.findBySprintIsNull();
+}
+
+
+
+
+// @Transactional
+// public void moveUndoneTasksFromEndedSprintsToBacklog() {
+//     List<Sprint> endedSprints = sprintRepository.findByStatus(SprintStatus.ENDED);
+
+//     for (Sprint sprint : endedSprints) {
+//         List<Task> undoneTasks = taskRepository.findBySprintAndTaskStatusNot(sprint, TaskStatus.DONE);
+
+//         for (Task task : undoneTasks) {
+//             task.setSprint(null);
+//             task.setStudent(null); // if a student is assigned
+//         }
+
+//         taskRepository.saveAll(undoneTasks); // bulk update
+//     }
+// }
 }

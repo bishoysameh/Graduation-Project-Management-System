@@ -1,6 +1,7 @@
 package com.graduationProject.gpManagementSystem.repository;
 
 import com.graduationProject.gpManagementSystem.enums.TaskStatus;
+import com.graduationProject.gpManagementSystem.model.Sprint;
 import com.graduationProject.gpManagementSystem.model.Task;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -13,7 +14,9 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findByStudentIdAndTaskStatus(Long studentId, TaskStatus taskStatus);
     List<Task> findByTaskStatus(TaskStatus taskStatus);
     List<Task> findBySprintIdAndTaskStatus(Long sprintId, TaskStatus status);
-
+    List<Task> findBySprintIsNull();
+    List<Task> findBySprintAndTaskStatusNot(Sprint sprint, TaskStatus status);
+    List<Task> findBySprint(Sprint sprint);
 
 
 }

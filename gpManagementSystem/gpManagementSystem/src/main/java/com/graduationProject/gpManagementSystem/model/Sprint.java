@@ -46,8 +46,30 @@ public class Sprint {
     @OneToMany(mappedBy = "sprint", cascade = CascadeType.ALL)
     private List<Task> tasks; // A sprint has multiple tasks
 
+    @OneToMany(mappedBy = "sprint", cascade = CascadeType.ALL)
+    private List<TaskHistory> taskHistories; // A sprint has multiple tasks
+
     // Constructors
     public Sprint() {}
+
+    
+
+    public Sprint(Long id, String name, String description, LocalDateTime startTime, LocalDateTime endTime,
+            int durationInWeeks, SprintStatus status, Project project, List<Task> tasks,
+            List<TaskHistory> taskHistories) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.durationInWeeks = durationInWeeks;
+        this.status = status;
+        this.project = project;
+        this.tasks = tasks;
+        this.taskHistories = taskHistories;
+    }
+
+
 
     public Sprint(String name, String description, int durationInWeeks, Project project , List<Task> tasks) {
         this.name = name;
@@ -146,6 +168,14 @@ public class Sprint {
 
     public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
+    }
+
+    public List<TaskHistory> getTaskHistories() {
+        return taskHistories;
+    }
+
+    public void setTaskHistories(List<TaskHistory> taskHistories) {
+        this.taskHistories = taskHistories;
     }
 
 

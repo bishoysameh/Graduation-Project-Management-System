@@ -19,8 +19,10 @@ import com.graduationProject.gpManagementSystem.exception.ResourceNotFoundExcept
 import com.graduationProject.gpManagementSystem.model.Project;
 import com.graduationProject.gpManagementSystem.model.Sprint;
 import com.graduationProject.gpManagementSystem.model.Task;
+import com.graduationProject.gpManagementSystem.model.TaskHistory;
 import com.graduationProject.gpManagementSystem.repository.ProjectRepository;
 import com.graduationProject.gpManagementSystem.repository.SprintRepository;
+import com.graduationProject.gpManagementSystem.repository.TaskHistoryRepository;
 import com.graduationProject.gpManagementSystem.repository.TaskRepository;
 
 @Service
@@ -34,6 +36,9 @@ public class SprintService {
 
     @Autowired
     private TaskRepository taskRepository;
+
+    @Autowired
+    private TaskHistoryRepository taskHistoryRepository;
 
 
 
@@ -86,6 +91,35 @@ public class SprintService {
         sprint.setStatus(SprintStatus.ENDED);
         sprintRepository.save(sprint);
 
+        List<Task> sprintTasks = taskRepository.findBySprint(sprint);
+
+        for (Task task : sprintTasks) {
+            if (task.getStudent() != null) {
+
+                TaskHistory history = new TaskHistory();
+                history.setOriginalTaskId(task.getId());
+                history.setTitle(task.getTitle());
+                history.setDescription(task.getDescription());
+                history.setTaskStatus(task.getTaskStatus()); 
+                history.setStartDate(task.getStartDate());
+                history.setEndDate(task.getEndDate());
+                history.setCompletedDate(
+                    task.getTaskStatus() == TaskStatus.DONE ? LocalDate.now() : null
+                );
+                history.setStudent(task.getStudent());
+                history.setProject(task.getProject());
+                history.setSprint(task.getSprint());
+    
+                taskHistoryRepository.save(history);
+            }
+            
+            if (task.getTaskStatus() != TaskStatus.DONE) {
+                task.setSprint(null);
+                task.setStudent(null);
+            }
+              taskRepository.save(task); 
+    }
+
     ApiResponse<Sprint> response = new ApiResponse<>(
         "success",
         "Sprint ended successfully",
@@ -93,7 +127,29 @@ public class SprintService {
     );
 
     return ResponseEntity.ok(response);
-    }
+}
+
+
+
+
+
+
+
+
+
+
+    // if (sprint.getStatus() == SprintStatus.ENDED) {
+    //     List<Task> undoneTasks = taskRepository.findBySprintAndStatusNot(sprint, TaskStatus.DONE);
+    //     for (Task task : undoneTasks) {
+    //         task.setSprint(null);
+    //         task.setStudent(null);
+    //     }
+    //     taskRepository.saveAll(undoneTasks);
+    // }
+///////////////////////////////////////////////////////////////////
+/// 
+///
+///  
 
 
 

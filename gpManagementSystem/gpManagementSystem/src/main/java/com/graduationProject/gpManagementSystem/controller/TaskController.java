@@ -167,4 +167,21 @@ public class TaskController {
         List<Task> tasks = taskService.getTasksBySprintId(sprintId);
         return ResponseEntity.ok(tasks);
     }
+
+
+
+//to get tasks in backlog (if sprint id is assigned , tasks selected to specific sprints not apear in backlog )
+    @GetMapping("/backlog")
+    public ResponseEntity<List<Task>> getTasksWithoutSprint() {
+        List<Task> tasks = taskService.getTasksWithoutSprint();
+        return ResponseEntity.ok(tasks);
+    }
+
+
+//     @PutMapping("/backlog-refresh")
+//     public ResponseEntity<String> refreshBacklogFromEndedSprints() {
+//     taskService.moveUndoneTasksFromEndedSprintsToBacklog();
+//     return ResponseEntity.ok("Backlog updated from ended sprints");
+// }
+
 }

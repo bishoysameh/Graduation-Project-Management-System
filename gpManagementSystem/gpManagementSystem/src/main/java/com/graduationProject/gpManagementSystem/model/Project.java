@@ -42,6 +42,11 @@ public class Project {
     private List<Task> tasks;
 
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+    private List<TaskHistory> taskHistories;
+
+
     @OneToOne
     @JoinColumn(name = "team_id", referencedColumnName = "id")
     private Team team;
@@ -54,6 +59,26 @@ public class Project {
 
 
     public Project(){}
+
+    
+
+
+    public Project(Long id, String title, String description,
+            com.graduationProject.gpManagementSystem.enums.ProjectStatus projectStatus, LocalDate startDate,
+            LocalDate endDate, List<Task> tasks, List<TaskHistory> taskHistories, Team team, List<Sprint> sprints) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        ProjectStatus = projectStatus;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.tasks = tasks;
+        this.taskHistories = taskHistories;
+        this.team = team;
+        this.sprints = sprints;
+    }
+
+
 
 
     public Project(Long id, String title, String description,
@@ -158,6 +183,20 @@ public class Project {
 
     public void setSprints(List<Sprint> sprints) {
         this.sprints = sprints;
+    }
+
+
+
+
+    public List<TaskHistory> getTaskHistories() {
+        return taskHistories;
+    }
+
+
+
+
+    public void setTaskHistories(List<TaskHistory> taskHistories) {
+        this.taskHistories = taskHistories;
     }
     
 

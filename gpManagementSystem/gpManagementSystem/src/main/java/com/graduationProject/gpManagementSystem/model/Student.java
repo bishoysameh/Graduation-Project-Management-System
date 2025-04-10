@@ -59,6 +59,18 @@ public class Student extends User{
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     private List<Task> tasks;
 
+
+    
+    @JsonIgnore
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    private List<TaskHistory> taskhHistories;
+
+
+
+
+
+
+
     public Student(int level, Department department, String studentId, double gpa, int creditHours , boolean isTeamLeader) {
         this.level = level;
         this.department = department;
@@ -92,6 +104,22 @@ public class Student extends User{
         this.team = team;
         this.tasks = tasks;
     }
+
+
+
+
+    public Student(int level, Department department, String studentId, double gpa, int creditHours,boolean isTeamLeader, Team team,
+    List<Task> tasks, List<TaskHistory> taskHistories) {
+this.level = level;
+this.department = department;
+this.studentId = studentId;
+this.gpa = gpa;
+this.creditHours = creditHours;
+this.isTeamLeader = isTeamLeader;
+this.team = team;
+this.tasks = tasks;
+this.taskhHistories = taskHistories;
+}
 
     public Student(Long id, String username, String email, String password, Role role, Status status, int level,
             Department department, String studentId, double gpa, int creditHours, Team team,
@@ -173,6 +201,9 @@ public class Student extends User{
         this.team = team;
     }
 
+
+    
+
     // public List<Task> getStudentTasks() {
     //     return tasks;
     // }
@@ -188,6 +219,14 @@ public class Student extends User{
                 + ", getRole()=" + getRole() + ", getStatus()=" + getStatus() + ", getLevel()=" + getLevel()
                 + ", getDepartment()=" + getDepartment() + ", getStudentId()=" + getStudentId() + ", getGpa()="
                 + getGpa() + ", getCreditHours()=" + getCreditHours() + "]";
+    }
+
+    public List<TaskHistory> getTaskhHistories() {
+        return taskhHistories;
+    }
+
+    public void setTaskhHistories(List<TaskHistory> taskhHistories) {
+        this.taskhHistories = taskhHistories;
     }
 
 
